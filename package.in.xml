@@ -1,16 +1,24 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>********** Fill in project name **********</name>
+  <name>umrt-serial-cam-ros</name>
   <version>@version_input@</version> <!-- Version number parsed from version file, replaced here by CMake -->
-  <description>********** Fill in project description **********</description>
-  <maintainer email="***** email *****">***** First Last *****</maintainer>
+  <description>*UMRT Serial Camera ROS Package</description>
+  <maintainer email="edcel@example.com">edcela</maintainer>
   <license>MPL-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
+
+  <depend>ffmpeg</depend>
+  <depend>ros-humble-image-transport-plugins</depend>
+  <depend>ros-humble-rmw2-fastrtps-cpp</depend>
+  <depend>ros-humble-v4l2-camera </depend>
+  <depend>ros-humble-image-transport</depend>
+  <depend>ros-humble-ffmpeg-image-transport</depend>
+  <depend>std_srvs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

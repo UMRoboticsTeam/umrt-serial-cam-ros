@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(********** Fill in project name **********)
+project(umrt-serial-cam-ros)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -14,6 +14,10 @@ include_directories(SYSTEM /opt/ros/$ENV{ROS_DISTRO}/include)
 set(THIS_PACKAGE_INCLUDE_DEPENDS
         rclcpp
         rclcpp_lifecycle
+        v4l2-camera 
+        image-transport 
+        ffmpeg-image-transport
+        std_srvs
         )
 
 # find dependencies
@@ -22,9 +26,10 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# CHANGE THIS TO ADD ENCODER MANAGER
 add_executable(${PROJECT_NAME}
-    src/project_name.cpp
-    src/example_node.cpp
+    src/encoder_manager.cpp
+#     src/example_node.cpp
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC
@@ -40,7 +45,7 @@ ament_target_dependencies(
 file(READ "version" version_input)
 string(REGEX MATCH "([0-9]+)\.([0-9]+)\.([0-9]+)" _ ${version_input})
 
-# Fill version number into package.xml
+#Fill version number into package.xml
 configure_file(
         package.in.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/package.xml

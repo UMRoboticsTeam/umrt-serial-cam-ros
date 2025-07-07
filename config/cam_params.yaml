@@ -1,0 +1,34 @@
+# umrt-cam-launch-pkg/config/cam_params.yaml
+
+# Rover Camera 0 Config:
+# This camera will be used for Rover
+# Assume /dev/video8 -> might be needed to change to dynamically set 
+/rover/rover_cam0:
+  ros__parameters:
+    # video_device: "/dev/video8"
+    pixel_format: "YUYV"
+    image_size: [640, 480]
+    # time_per_frame: [1, 30]
+    .image_raw.ffmpeg.encoding: "raw" # ensures that the image_raw.ffmpeg.encoding is not libx264 don't want to use CPU resources
+
+# Arm Camera 0 Config:
+# This camera will be used for Robotic Arm
+# Assume /dev/video4 -> might be needed to change to dynamically set 
+/arm0/arm_cam0:
+  ros__parameters:
+    # video_device: "/dev/video4"
+    pixel_format: "YUYV"
+    image_size: [640, 480]
+    # time_per_frame: [1, 30]
+    .image_raw.ffmpeg.encoding: "raw"
+
+# Arm Camera 1 Config:
+# This camera will be used for Robotic Arm
+# Assume /dev/video6 -> might be needed to change to dynamically set 
+/arm1/arm_cam1:
+  ros__parameters:
+    # video_device: "/dev/video6"
+    pixel_format: "YUYV"
+    image_size: [640, 480]
+    # time_per_frame: [1, 30]
+    .image_raw.ffmpeg.encoding: "raw"
