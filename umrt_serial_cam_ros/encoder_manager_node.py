@@ -17,7 +17,7 @@ Import
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
-from rclpy.executors import MultiThreadExecutor
+from rclpy.executors import MultiThreadedExecutor
 from std_srvs.srv import SetBool
 import subprocess
 import os
@@ -221,7 +221,7 @@ def main(args=None):
     rclpy.init(args=args)
     encoder_manager = EncoderManager()
 
-    executor = MultiThreadExecutor()
+    executor = MultiThreadedExecutor()
     executor.add_node(encoder_manager)
 
     try:
