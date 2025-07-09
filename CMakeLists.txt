@@ -29,7 +29,6 @@ endforeach()
 # CHANGE THIS TO ADD ENCODER MANAGER
 add_executable(${PROJECT_NAME}
     src/encoder_manager.cpp
-#     src/example_node.cpp
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC

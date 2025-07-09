@@ -1,5 +1,5 @@
-# UMRT ROS Template
-ROS project repository template for the University of Manitoba Robotics Team.
+# UMRT Serial Camera ROS Package
+Serial Camera ROS project repository for the University of Manitoba Robotics Team.
 
 New projects should be **forked** from this repo (not using this as a template, as that prevents template changes from
 trickling down). Each new project must:

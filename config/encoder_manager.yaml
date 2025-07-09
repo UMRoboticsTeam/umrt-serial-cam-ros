@@ -1,0 +1,35 @@
+encoder_manager:
+  ros__parameters:
+    camera_list: ["camera_0", "camera_1", "camera_2"] # List of cameras to manage
+
+    # --- Parameters for Rover Camera 0 ---
+    camera_0.in_raw_topic: "/rover/image_raw"
+    camera_0.out_ffmpeg_topic: "/rover/ffmpeg"
+    camera_0.namespace: "rover" # All encoders can share this namespace or have unique ones like /cam_0_enc
+    camera_0.encoding: "h264_nvenc"
+    camera_0.qmax: "31"
+    camera_0.preset: "p1"
+    camera_0.tune: "ll"
+    camera_0.bit_rate: "2000000"
+    camera_0.gop_size: "15"
+
+    # --- Parameters for Arm Camera 0 ---
+    camera_1.in_raw_topic: "/arm0/image_raw"
+    camera_1.out_ffmpeg_topic: "/arm0/ffmpeg"
+    camera_1.namespace: "arm0"
+    camera_1.encoding: "h264_nvenc"
+    camera_1.qmax: "31"
+    camera_1.preset: "p1"
+    camera_1.tune: "ll"
+    camera_1.bit_rate: "1000000"
+    camera_1.gop_size: "15"
+
+    # --- Parameters for Arm Camera 1 ---
+    camera_2.in_raw_topic: "/arm1/image_raw"
+    camera_2.out_ffmpeg_topic: "/arm1/ffmpeg"
+    camera_2.namespace: "arm1"
+    camera_2.encoding: "h264_nvenc"
+    camera_2.qmax: "31"
+    camera_2.preset: "realtime"
+    camera_2.bit_rate: "2000000"
+    camera_2.gop_size: "15"

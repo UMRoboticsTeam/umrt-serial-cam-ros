@@ -28,9 +28,9 @@ def generate_launch_description():
     return LaunchDescription([
 
         # We can declare some arguments that can be passed on but it's not used here
-        DeclareLaunchArgument('rover0', default_value='/dev/video8', description='Device path for rover camera 0'),
-        DeclareLaunchArgument('arm0', default_value='/dev/video6', description='Device path for arm camera 0'),
-        DeclareLaunchArgument('arm1', default_value='/dev/video4', description='Device path for arm camera 1'),
+        DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1', 'CAM2'), description='Device path for rover camera 0'),
+        DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0'),
+        DeclareLaunchArgument('arm1', default_value=os.getenv('ARMCAM1'), description='Device path for arm camera 1'),
 
         # Camera 0 - Rover Serial Camera
         Node(

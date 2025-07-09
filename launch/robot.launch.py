@@ -11,7 +11,7 @@ Imports
 """
 from launch import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.actions import DeclareLaunchArguments, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.substitutions import LaunchConfiguration
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy 
 from launch_ros.actions import Node
@@ -23,21 +23,21 @@ Generate Launch Description
 """
 def generate_launch_description():
 
-    # Declare Launch Arguments
+    # Declare Launch Arguments - these maybe unnecessary as camera.launch.py can handle this
 
     # rover cam 0
-    rover0_arg = DeclareLaunchArguments(
-        'rover0', default_value=os.getenv('CAM1', 'CAM2', '/dev/video0'),
+    rover0_arg = DeclareLaunchArgument(
+        'rover0', default_value=os.getenv('CAM1', 'CAM2'),
         description='Device path for rover camera 0'
     )
     # arm cam 0
-    arm0_arg = DeclareLaunchArguments(
-        'arm0', default_value=os.getenv('ARMCAM0', '/dev/video6'),
+    arm0_arg = DeclareLaunchArgument(
+        'arm0', default_value=os.getenv('ARMCAM0'),
         description='Device path for arm camera 0'
     )
     # arm cam 1
-    arm1_arg = DeclareLaunchArguments(
-        'arm1', default_value=os.getenv('ARMCAM1', '/dev/video4'),
+    arm1_arg = DeclareLaunchArgument(
+        'arm1', default_value=os.getenv('ARMCAM1'),
         description='Device path for arm camera 1'
     )
 
@@ -64,8 +64,8 @@ def generate_launch_description():
             ), 
             launch_arguments = {
                 'rover0': LaunchConfiguration('rover0'),
-                'cam0': LaunchConfiguration('arm0'),
-                'cam1': LaunchConfiguration('arm1')
+                'arm0': LaunchConfiguration('arm0'),
+                'arm1': LaunchConfiguration('arm1')
             }.items()
         ),
 
