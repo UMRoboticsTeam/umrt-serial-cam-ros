@@ -26,8 +26,9 @@ def generate_launch_description():
     # Declare Launch Arguments - these maybe unnecessary as camera.launch.py can handle this
 
     # rover cam 0
+    # Problem with default value for rover cam - as even empty environment variables still pass through 
     rover0_arg = DeclareLaunchArgument(
-        'rover0', default_value=os.getenv('CAM1', 'CAM2'),
+        'rover0', default_value=os.getenv('CAM1') or os.getenv('CAM2'), 
         description='Device path for rover camera 0'
     )
     # arm cam 0

@@ -20,7 +20,7 @@ def generate_launch_description():
 
     # Config for all camera parameters
     config_path = os.path.join(
-        get_package_share_directory('umrt-camera-serial-ros'),
+        get_package_share_directory('umrt-serial-cam-ros'),
         'config',
         'cam_params.yaml'
         )

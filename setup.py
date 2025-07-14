@@ -2,12 +2,17 @@ import os
 from glob import glob
 from setuptools import setup
 
+# Seperate the package name and python name 
 package_name = 'umrt-serial-cam-ros'
 python_name = 'umrt_serial_cam_ros'
 
+# Read version from a file
+with open(os.path.join(os.path.dirname(__file__), 'version')) as f:
+    version = f.read().strip()
+
 setup(
     name=package_name,
-    version='0.0.0',
+    version=version,
     packages=[python_name],
     data_files=[
         # Install launch files
