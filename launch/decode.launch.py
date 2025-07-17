@@ -7,9 +7,9 @@ Imports
 """
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
-
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 
 """
 Generate Launch Description
@@ -33,6 +33,13 @@ def generate_launch_description():
         description = 'Output raw image topic.'
     )
 
+    qos_profile = QoSProfile(
+        reliability=ReliabilityPolicy.BEST_EFFORT, # Matches your C++ publisher
+        history=HistoryPolicy.KEEP_LAST,
+        depth=1, # Depth 1 as per your C++ publisher
+        durability=DurabilityPolicy.VOLATILE # Matches your C++ publisher
+    )
+
     # Launch configurations
     namespace = LaunchConfiguration('namespace')
     in_ffmpeg = LaunchConfiguration('in_ffmpeg')
@@ -48,7 +55,7 @@ def generate_launch_description():
             ('in/ffmpeg', in_ffmpeg),
             ('out', out_raw),
         ],
-        arguments=['ffmpeg', 'raw'],
+        arguments=['ffmpeg', 'raw']
     )
 
     return LaunchDescription([

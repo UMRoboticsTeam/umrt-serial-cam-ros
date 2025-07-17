@@ -1,0 +1,26 @@
+# encoder_params.yaml
+encoder_manager: # This is the name of your node, as defined in Node(name='encoder_manager')
+  ros__parameters:
+    # Parameters for rover_cam0
+    rover.ffmpeg.encoding: "h264_nvenc"
+    rover.ffmpeg.qmax: 31
+    rover.ffmpeg.preset: "p1"
+    rover.ffmpeg.tune: "ll"
+    rover.ffmpeg.bit_rate: 2000000
+    rover.ffmpeg.gop_size: 15
+
+    # Parameters for arm_cam0
+    arm0.ffmpeg.encoding: "h264_nvenc"
+    arm0.ffmpeg.qmax: 31
+    arm0.ffmpeg.preset: "p1"
+    arm0.ffmpeg.tune: "ll"
+    arm0.ffmpeg.bit_rate: 2000000
+    arm0.ffmpeg.gop_size: 15
+
+    # Parameters for arm_cam1
+    arm1.ffmpeg.encoding: "h264_nvenc"
+    arm1.ffmpeg.qmax: 31
+    arm1.ffmpeg.preset: "p1"
+    arm1.ffmpeg.tune: "ll"
+    arm1.ffmpeg.bit_rate: 2000000
+    arm1.ffmpeg.gop_size: 15

@@ -23,6 +23,13 @@ Generate Launch Description
 """
 def generate_launch_description():
 
+    # Define the path to your parameter YAML file
+    encoder_params_path = os.path.join(
+        get_package_share_directory('umrt-serial-cam-ros'),
+        'config',
+        'encoder_params.yaml'
+        )
+
     # Declare Launch Arguments - these maybe unnecessary as camera.launch.py can handle this
 
     # rover cam 0
@@ -73,10 +80,11 @@ def generate_launch_description():
         # Launch the Encoder Manager Node
         Node(
             package='umrt-serial-cam-ros', 
-            executable='encoder_manager_node',
+            executable='umrt-serial-cam-ros',
             name='encoder_manager',
             output='screen',
             emulate_tty=True, # Recommended for seeing node output
+            parameters=[encoder_params_path]
         )
     
     ])
