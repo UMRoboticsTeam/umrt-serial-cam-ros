@@ -16,6 +16,9 @@ Generate Launch Description
 """
 def generate_launch_description():
 
+    """
+    Parameters
+    """
     # Declare arguments
     namespace_arg = DeclareLaunchArgument(
         'namespace',
@@ -45,6 +48,9 @@ def generate_launch_description():
     in_ffmpeg = LaunchConfiguration('in_ffmpeg')
     out_raw = LaunchConfiguration('out_raw')
 
+    """
+    Nodes
+    """
     # Image transport republish node for decoding
     ffmpeg_decoder_node = Node(
         name='image_ffmpeg_to_raw',
@@ -58,16 +64,16 @@ def generate_launch_description():
         arguments=['ffmpeg', 'raw']
     )
 
-    return LaunchDescription([
+    """
+    Launch
+    """
+    decode = [
         namespace_arg,
         in_ffmpeg_arg,
         out_raw_arg,
         ffmpeg_decoder_node
-    ])
+    ]
 
-    # ld = LaunchDescription()
-    # ld.add_action(namespace_arg)
-    # ld.add_action(in_ffmpeg_arg)
-    # ld.add_action(out_raw_arg)
-    # ld.add_action(ffmpeg_transport_node)
-    # return ld
+    launch_entities = decode 
+
+    return LaunchDescription(launch_entities)

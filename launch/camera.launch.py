@@ -14,6 +14,10 @@ import os
 Launch File for Camera and Encoders 
 """
 def generate_launch_description():
+
+    """
+    Parameters
+    """
     rover0 = LaunchConfiguration('rover0')
     arm0 = LaunchConfiguration('arm0')
     arm1 = LaunchConfiguration('arm1')
@@ -24,65 +28,63 @@ def generate_launch_description():
         'config',
         'cam_params.yaml'
         )
+    
+    # We can declare some arguments that can be passed on but it's not used here
+    rover0_arg = DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1', 'CAM2'), description='Device path for rover camera 0'),
+    arm1_arg = DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0'),
+    arm2_arg = DeclareLaunchArgument('arm1', default_value=os.getenv('ARMCAM1'), description='Device path for arm camera 1'),
+ 
+    """
+    Nodes
+    """
+    # Camera 0 - Rover Serial Camera
+    rover0 = Node(
+        package='v4l2_camera',
+        executable='v4l2_camera_node',
+        name='rover_cam0',
+        namespace = 'rover',
+        parameters=[config_path, {'video_device': rover0}
+        #     parameters=[config_path, {'video_device': cam1}], <- Use this if you plan to use launch arguments
+        #     {
+        #     'video_device': '/dev/video8',
+        #     'pixel_format': 'YUYV',
+        #     'frame_rate': 30.0, # Equivalent to 'frame': 30.0,
+        #     'image_size': (640, 480),
+        #     '.image_raw.ffmpeg.encoding': 'raw'
+        # }
+        ]
+    )
 
-    return LaunchDescription([
+    # Camera 1 - Arm Camera 0
+    arm1 = Node(
+        package='v4l2_camera',
+        executable='v4l2_camera_node',
+        name='arm_cam0',
+        namespace='arm0',
+        parameters=[config_path, {'video_device': arm0}]
+    )
 
-        # We can declare some arguments that can be passed on but it's not used here
-        DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1', 'CAM2'), description='Device path for rover camera 0'),
-        DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0'),
-        DeclareLaunchArgument('arm1', default_value=os.getenv('ARMCAM1'), description='Device path for arm camera 1'),
+    # Camera 2 - Arm Camera 1
+    arm2 = Node(
+        package='v4l2_camera',
+        executable='v4l2_camera_node',
+        name='arm_cam1',
+        namespace='arm1',
+        parameters=[config_path, {'video_device': arm1}]
+    )
 
-        # Camera 0 - Rover Serial Camera
-        Node(
-            package='v4l2_camera',
-            executable='v4l2_camera_node',
-            name='rover_cam0',
-            namespace = 'rover',
-            parameters=[config_path, {'video_device': rover0}
-            #     parameters=[config_path, {'video_device': cam1}], <- Use this if you plan to use launch arguments
-            #     {
-            #     'video_device': '/dev/video8',
-            #     'pixel_format': 'YUYV',
-            #     'frame_rate': 30.0, # Equivalent to 'frame': 30.0,
-            #     'image_size': (640, 480),
-            #     '.image_raw.ffmpeg.encoding': 'raw'
-            # }
-            ]
-            # remappings=[
-            #     ('/image_raw', '/camera_0/image_raw'),
-            #     ('/camera_info', '/camera_0/camera_info')
-            # ]
-        ),
+    """
+    Launch
+    """
+    cameras = [
+        rover0_arg,
+        arm1_arg,
+        arm2_arg,
+        rover0,
+        arm1,
+        arm2
+    ]
 
-        # Camera 1 - Arm Camera 0
-        Node(
-            package='v4l2_camera',
-            executable='v4l2_camera_node',
-            name='arm_cam0',
-            namespace='arm0',
-            parameters=[config_path, {'video_device': arm0}]
-        ),
+    launch_entities = cameras
 
-        # Camera 2 - Arm Camera 1
-        Node(
-            package='v4l2_camera',
-            executable='v4l2_camera_node',
-            name='arm_cam1',
-            namespace='arm1',
-            parameters=[config_path, {'video_device': arm1}]
-        ),
-
-        # # USB Camera 1
-        # Node(
-        #     package='usb_cam',
-        #     executable='usb_cam_node_exe',
-        #     namespace="usb_cam1",
-        #     name='usb_camera_1',
-        #     parameters=[config_path, {'video_device': cam1}],
-        #     remappings=[
-        #         ('/image_raw', '/camera_1/image_raw'),
-        #         ('/camera_info', '/camera_1/camera_info')
-        #     ]
-        # ),
-        
-    ])
+    return LaunchDescription(launch_entities)

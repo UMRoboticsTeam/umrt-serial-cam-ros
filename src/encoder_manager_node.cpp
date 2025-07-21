@@ -56,6 +56,8 @@ EncoderManager::EncoderManager():Node("encoder_manager")
         const std::string &cam_name = camera.first;
         std::string service_name = "/" + cam_name + "/bool";
 
+        encoder_status_[cam_name] = false;
+
         //  Use std::bind to pass the camera_namespace
         control_services_[cam_name] = this->create_service<std_srvs::srv::SetBool>(
             service_name, 
@@ -74,10 +76,10 @@ EncoderManager::EncoderManager():Node("encoder_manager")
 EncoderManager::~EncoderManager()
 {
     // Stop any running encoders on shutdown
-    for (const auto &encoder : encoder_publishers_)
+    for (const auto &encoder : encoder_status_)
     {
         const std::string &cam_name = encoder.first;
-        if (encoder_publishers_.count(cam_name) > 0 && raw_image_subscribers_.count(cam_name) > 0)
+        if (encoder.second)
         {
             RCLCPP_INFO(this->get_logger(), "Stopping encoder for %s during shutdown.", cam_name.c_str());
             stopEncoder(cam_name);
@@ -106,13 +108,16 @@ EncoderManager::~EncoderManager()
 
     RCLCPP_INFO(this->get_logger(), "Received command: %s for %s", command.c_str(), camera_namespace.c_str());
 
+    //  Get current encoder status
+    bool current_encoder_status = encoder_status_[camera_namespace];
+
     //  Check if command is valid
     //  Start Command - To start encoder
     if (command == "start")
     {
         //  Check if encoder for that namespace is already running 
         //  If it is running, throw a warning
-        if (encoder_publishers_.count(camera_namespace) > 0 && encoder_publishers_[camera_namespace].getNumSubscribers() > 0)
+        if (current_encoder_status)
         {
             response->success = false;
             response->message = "Encoder " + camera_namespace + " is already running.";
@@ -140,7 +145,7 @@ EncoderManager::~EncoderManager()
     {
         //  Check if encoder for that namespace has stopped
         //  If it is stopped, thrown a warning
-        if (encoder_publishers_.count(camera_namespace) == 0 || encoder_publishers_[camera_namespace].getNumSubscribers() == 0)
+        if (!current_encoder_status)
         {
             response->success = false;
             response->message = "Encoder " + camera_namespace + " is already stopped.";
@@ -193,6 +198,7 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
     //  Try to start encoder
     try
     {
+
         // Get config for a given camera
         const EncoderConfig &config = encoder_configs_.at(camera_namespace);
 
@@ -247,7 +253,10 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
         // ROS INFO
         RCLCPP_INFO(this->get_logger(), "Encoder for %s started. Subscribing to %s, Publishing to %s (ffmpeg).",
                     camera_namespace.c_str(), config.in_raw_topic.c_str(), config.out_ffmpeg_topic.c_str());
-        
+
+        //  Set the encoder status to true
+        encoder_status_[camera_namespace] = true;
+                
         //  Successful start
         return true;
     }
@@ -255,6 +264,7 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
     catch (const std::exception &e)
     {
         RCLCPP_ERROR(this->get_logger(), "Failed to start encoder %s: %s", camera_namespace.c_str(), e.what());
+        encoder_status_[camera_namespace] = false;
         return false;
     }
 }   //  startEncoder
@@ -267,9 +277,12 @@ bool EncoderManager::stopEncoder(const std::string &camera_namespace)
     //  Check if it is running, if so erase
     if (encoder_publishers_.count(camera_namespace) > 0)
     {
-        raw_image_subscribers_.erase(camera_namespace);
-        encoder_publishers_.erase(camera_namespace);
-        image_transports_.erase(camera_namespace); // Also erase the ImageTransport instance
+        //  Must erase, as erasing only one leaves the other things hanging 
+        raw_image_subscribers_.erase(camera_namespace); //  Erase Subscribers
+        encoder_publishers_.erase(camera_namespace);    //  Erase Publishers
+        image_transports_.erase(camera_namespace);  //  Erase Image Transport Instances
+
+        encoder_status_[camera_namespace] = false;
 
         RCLCPP_INFO(this->get_logger(), "Encoder for %s stopped.", camera_namespace.c_str());
         return true;

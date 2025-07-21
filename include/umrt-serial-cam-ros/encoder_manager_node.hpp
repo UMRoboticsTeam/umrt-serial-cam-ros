@@ -10,7 +10,7 @@
 #include <rclcpp/publisher_options.hpp>
 #include <rclcpp/subscription_options.hpp>
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <memory>
 #include <vector>
@@ -53,20 +53,22 @@ private:
     bool startEncoder(const std::string &camera_namespace);
     bool stopEncoder(const std::string &camera_namespace);
 
-    // Map to store configuration for each camera
-    std::map<std::string, EncoderConfig> encoder_configs_;
+    // Unordered Map to store configuration for each camera
+    std::unordered_map<std::string, EncoderConfig> encoder_configs_;
 
-    // Map to store image_transport publishers (the "encoders")
-    std::map<std::string, image_transport::Publisher> encoder_publishers_;
+    // Unordered Map to store image_transport publishers (the "encoders")
+    std::unordered_map<std::string, image_transport::Publisher> encoder_publishers_;
 
-    // Map to store image_transport subscribers (listening to raw images)
-    std::map<std::string, image_transport::Subscriber> raw_image_subscribers_;
+    // Unordered Map to store image_transport subscribers (listening to raw images)
+    std::unordered_map<std::string, image_transport::Subscriber> raw_image_subscribers_;
 
-    // Map to store image_transport instances (one per camera/namespace)
-    std::map<std::string, std::shared_ptr<image_transport::ImageTransport>> image_transports_;
+    // Unordered Map to store image_transport instances (one per camera/namespace)
+    std::unordered_map<std::string, std::shared_ptr<image_transport::ImageTransport>> image_transports_;
 
-    // Map to store service servers for each camera
-    std::map<std::string, rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr> control_services_;
+    // Unordered Map to store service servers for each camera
+    std::unordered_map<std::string, rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr> control_services_;
+
+    std::unordered_map<std::string, bool> encoder_status_;  
 
 
 };   //  class EncoderManager
