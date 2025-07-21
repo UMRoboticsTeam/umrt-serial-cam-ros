@@ -67,9 +67,9 @@ private:
 
     // Unordered Map to store service servers for each camera
     std::unordered_map<std::string, rclcpp::Service<std_srvs::srv::SetBool>::SharedPtr> control_services_;
-
+    
+    // Unordered Map to store encoder status
     std::unordered_map<std::string, bool> encoder_status_;  
-
 
 };   //  class EncoderManager
 
