@@ -41,6 +41,9 @@ public:
     ~EncoderManager();
 
 private:
+
+    void setupEncoder(const std::string &camera_namespace);
+    
     void encoderControlCallback(
         const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
         std::shared_ptr<std_srvs::srv::SetBool::Response> response,

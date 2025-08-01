@@ -50,7 +50,7 @@ EncoderManager::EncoderManager():Node("encoder_manager")
         "2000000",
         "15"};
 
-    //  Create services for each camera 
+    //  Create services and setup the encoder for each camera
     for (const auto &camera : encoder_configs_)
     {
         const std::string &cam_name = camera.first;
@@ -65,7 +65,10 @@ EncoderManager::EncoderManager():Node("encoder_manager")
                       std::placeholders::_1, std::placeholders::_2, cam_name)
         );
 
-         RCLCPP_INFO(this->get_logger(), "Created service: %s for %s", service_name.c_str(), cam_name.c_str());
+        RCLCPP_INFO(this->get_logger(), "Created service: %s for %s", service_name.c_str(), cam_name.c_str());
+    
+        //  Call the setup function to create the encoders (publishers and subscribers)
+        setupEncoder(cam_name);
     }
 
 }   //  Constructor
@@ -93,109 +96,13 @@ EncoderManager::~EncoderManager()
  * Private Functions 
  */
 
- /**
- * encoderControlCallback - Backbone essentially, will get the bool service and check to start or stop the encoders.
- */
- void EncoderManager::encoderControlCallback(
-    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
-    std::shared_ptr<std_srvs::srv::SetBool::Response> response,
-    const std::string &camera_namespace)
-{
-
-    //  Get the SetBool Service request and then find out if it is start or stop
-    bool command_bool = request->data;
-    std::string command = command_bool ? "start" : "stop"; // Maybe we can set this to an int like 0 or 1 
-
-    RCLCPP_INFO(this->get_logger(), "Received command: %s for %s", command.c_str(), camera_namespace.c_str());
-
-    //  Get current encoder status
-    bool current_encoder_status = encoder_status_[camera_namespace];
-
-    //  Check if command is valid
-    //  Start Command - To start encoder
-    if (command == "start")
-    {
-        //  Check if encoder for that namespace is already running 
-        //  If it is running, throw a warning
-        if (current_encoder_status)
-        {
-            response->success = false;
-            response->message = "Encoder " + camera_namespace + " is already running.";
-            RCLCPP_WARN(this->get_logger(), response->message.c_str()); 
-        }
-        //  Else if its not running, attempt to start 
-        else 
-        {   
-            //  Successful start
-            if (startEncoder(camera_namespace))
-            {
-                response->success = true;
-                response->message = "Encoder " + camera_namespace + " started.";
-            }
-            //  Failed start
-            else
-            {
-                response->success = false;
-                response->message = "Failed to start encoder " + camera_namespace + ".";
-            }
-        }
-    }
-    //  Stop Command - To stop an encoder
-    else if (command == "stop")
-    {
-        //  Check if encoder for that namespace has stopped
-        //  If it is stopped, thrown a warning
-        if (!current_encoder_status)
-        {
-            response->success = false;
-            response->message = "Encoder " + camera_namespace + " is already stopped.";
-            RCLCPP_WARN(this->get_logger(), response->message.c_str());
-        }
-        //  Else if it is not stopped, attempt to stop
-        else 
-        {
-            if (stopEncoder(camera_namespace))
-            {
-                response->success = true;
-                response->message = "Encoder " + camera_namespace + " stopped.";
-            }
-            else
-            {
-                response->success = false;
-                response->message = "Failed to stop encoder " + camera_namespace + ".";
-            }
-        }
-    }
-    //  Invalid Command
-    else 
-    {
-        response->success = false;
-        response->message = "Unknown command: " + command + ". Use 'start' or 'stop'";
-        RCLCPP_ERROR(this->get_logger(), response->message.c_str());
-    }
-
-}   //  encoderControlCallback
-
 /**
- * rawImageCallback - Function is to forward the raw images to the image_transport publisher
- *                      Hopefully the ffmpeg_image_transport will the the encoding
+ * setupEncoder - Will start all cameras on node startup, given each camera_namespace, 
+ * this is to get rid of the start and kill of encoders
  */
-void EncoderManager::rawImageCallback(
-    const sensor_msgs::msg::Image::ConstSharedPtr &msg,
-    const std::string &camera_namespace)
+void setupEncoder(const std::string &camera_namespace)
 {
-    if (encoder_publishers_.count(camera_namespace) > 0)
-    {
-        encoder_publishers_[camera_namespace].publish(msg);
-    }
-}   //  rawImageCallback
-
-/**
- * startEncoder Function - This will start an encoder which is essentially a republish
- */
-bool EncoderManager::startEncoder(const std::string &camera_namespace)
-{
-    //  Try to start encoder
+    //  Try to setup encoder
     try
     {
 
@@ -256,17 +163,104 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
 
         //  Set the encoder status to true
         encoder_status_[camera_namespace] = true;
-                
-        //  Successful start
-        return true;
+        
     }
     //  Catch exception if try fails
     catch (const std::exception &e)
     {
         RCLCPP_ERROR(this->get_logger(), "Failed to start encoder %s: %s", camera_namespace.c_str(), e.what());
         encoder_status_[camera_namespace] = false;
-        return false;
     }
+
+}   //  setupEncoder
+
+ /**
+ * encoderControlCallback - Backbone essentially, will get the bool service and check to start or stop the encoders.
+ */
+void EncoderManager::encoderControlCallback(
+    const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+    std::shared_ptr<std_srvs::srv::SetBool::Response> response,
+    const std::string &camera_namespace)
+{
+    //  Get the SetBool Service request and then find out if it is start or stop
+    bool command_bool = request->data;
+    std::string command = command_bool ? "start" : "stop"; // Maybe we can set this to an int like 0 or 1 
+
+    RCLCPP_INFO(this->get_logger(), "Received command: %s for %s", command.c_str(), camera_namespace.c_str());
+
+    //  Get current encoder status
+    bool current_encoder_status = encoder_status_[camera_namespace];
+
+    //  Check if command is valid
+    //  Start Command - To start encoder
+    if (command == "start")
+    {
+        //  Check if encoder for that namespace is already running 
+        //  If it is running, throw a warning
+        if (current_encoder_status)
+        {
+            response->success = false;
+            response->message = "Encoder " + camera_namespace + " is already running.";
+            RCLCPP_WARN(this->get_logger(), response->message.c_str()); 
+        }
+        //  Else if its not running, attempt to start 
+        else 
+        {   
+            startEncoder(camera_namespace);
+            response->success = true;
+            response->message = "Encoder " + camera_namespace + " started publishing.";
+        }
+    }
+    //  Stop Command - To stop an encoder
+    else if (command == "stop")
+    {
+        //  Check if encoder for that namespace has stopped
+        //  If it is stopped, thrown a warning
+        if (!current_encoder_status)
+        {
+            response->success = false;
+            response->message = "Encoder " + camera_namespace + " is already stopped.";
+            RCLCPP_WARN(this->get_logger(), response->message.c_str());
+        }
+        //  Else if it is not stopped, attempt to stop
+        else 
+        {
+            stopEncoder(camera_namespace);
+            response->success = true;
+            response->message = "Encoder " + camera_namespace + " stopped publishing.";
+        }
+    }
+    //  Invalid Command
+    else 
+    {
+        response->success = false;
+        response->message = "Unknown command: " + command + ". Use 'start' or 'stop'";
+        RCLCPP_ERROR(this->get_logger(), response->message.c_str());
+    }
+
+}   //  encoderControlCallback
+
+/**
+ * rawImageCallback - Function is to forward the raw images to the image_transport publisher
+ *                      Hopefully the ffmpeg_image_transport will the the encoding
+ */
+void EncoderManager::rawImageCallback(
+    const sensor_msgs::msg::Image::ConstSharedPtr &msg,
+    const std::string &camera_namespace)
+{
+    if (encoder_status_[camera_namespace])
+    {
+        encoder_publishers_[camera_namespace].publish(msg);
+    }
+}   //  rawImageCallback
+
+/**
+ * startEncoder Function - This will start an encoder which is essentially a republish
+ */
+bool EncoderManager::startEncoder(const std::string &camera_namespace)
+{
+    encoder_status_[camera_namespace] = true;
+    RCLCPP_INFO(this->get_logger(), "Publishing started for node %s", camera_namespace.c_str());
 }   //  startEncoder
 
 /**
@@ -274,26 +268,8 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
  */
 bool EncoderManager::stopEncoder(const std::string &camera_namespace)
 {   
-    //  Check if it is running, if so erase
-    if (encoder_publishers_.count(camera_namespace) > 0)
-    {
-        //  Must erase, as erasing only one leaves the other things hanging 
-        raw_image_subscribers_.erase(camera_namespace); //  Erase Subscribers
-        encoder_publishers_.erase(camera_namespace);    //  Erase Publishers
-        image_transports_.erase(camera_namespace);  //  Erase Image Transport Instances
-
-        encoder_status_[camera_namespace] = false;
-
-        RCLCPP_INFO(this->get_logger(), "Encoder for %s stopped.", camera_namespace.c_str());
-        return true;
-    }
-    //  If it is 0, means it isnt running or already stopped
-    else
-    {
-        RCLCPP_WARN(this->get_logger(), "Encoder %s is not running or already stopped.", camera_namespace.c_str());
-        return false;
-    }
-
+    encoder_status_[camera_namespace] = false;
+    RCLCPP_INFO(this->get_logger(), "Publishing stopped for node %s", camera_namespace.c_str());
 }   //  stopEncoder
 
 }   //  namespace umrt_serial_cam_ros
