@@ -18,6 +18,12 @@ def generate_launch_description():
     """
     Parameters
     """
+    
+    # We can declare some arguments that can be passed on but it's not used here
+    rover0_arg = DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1'), description='Device path for rover camera 0')
+    arm1_arg = DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0')
+    arm2_arg = DeclareLaunchArgument('arm1', default_value=os.getenv('ARMCAM1'), description='Device path for arm camera 1')
+ 
     rover0 = LaunchConfiguration('rover0')
     arm0 = LaunchConfiguration('arm0')
     arm1 = LaunchConfiguration('arm1')
@@ -28,17 +34,12 @@ def generate_launch_description():
         'config',
         'cam_params.yaml'
         )
-    
-    # We can declare some arguments that can be passed on but it's not used here
-    rover0_arg = DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1', 'CAM2'), description='Device path for rover camera 0'),
-    arm1_arg = DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0'),
-    arm2_arg = DeclareLaunchArgument('arm1', default_value=os.getenv('ARMCAM1'), description='Device path for arm camera 1'),
- 
+
     """
     Nodes
     """
     # Camera 0 - Rover Serial Camera
-    rover0 = Node(
+    rover0_node = Node(
         package='v4l2_camera',
         executable='v4l2_camera_node',
         name='rover_cam0',
@@ -56,7 +57,7 @@ def generate_launch_description():
     )
 
     # Camera 1 - Arm Camera 0
-    arm1 = Node(
+    arm1_node = Node(
         package='v4l2_camera',
         executable='v4l2_camera_node',
         name='arm_cam0',
@@ -65,7 +66,7 @@ def generate_launch_description():
     )
 
     # Camera 2 - Arm Camera 1
-    arm2 = Node(
+    arm2_node = Node(
         package='v4l2_camera',
         executable='v4l2_camera_node',
         name='arm_cam1',
@@ -80,9 +81,9 @@ def generate_launch_description():
         rover0_arg,
         arm1_arg,
         arm2_arg,
-        rover0,
-        arm1,
-        arm2
+        rover0_node,
+        arm1_node,
+        arm2_node
     ]
 
     launch_entities = cameras

@@ -11,6 +11,7 @@ int main(int argc, char * argv[])
     // Create an instance of your EncoderManager node
     auto encoder_manager_node = std::make_shared<umrt_serial_cam_ros::EncoderManager>();
 
+    encoder_manager_node->init();
     // Add your node to the executor
     executor.add_node(encoder_manager_node);
 

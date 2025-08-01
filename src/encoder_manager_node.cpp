@@ -50,27 +50,6 @@ EncoderManager::EncoderManager():Node("encoder_manager")
         "2000000",
         "15"};
 
-    //  Create services and setup the encoder for each camera
-    for (const auto &camera : encoder_configs_)
-    {
-        const std::string &cam_name = camera.first;
-        std::string service_name = "/" + cam_name + "/bool";
-
-        encoder_status_[cam_name] = false;
-
-        //  Use std::bind to pass the camera_namespace
-        control_services_[cam_name] = this->create_service<std_srvs::srv::SetBool>(
-            service_name, 
-            std::bind(&EncoderManager::encoderControlCallback, this,
-                      std::placeholders::_1, std::placeholders::_2, cam_name)
-        );
-
-        RCLCPP_INFO(this->get_logger(), "Created service: %s for %s", service_name.c_str(), cam_name.c_str());
-    
-        //  Call the setup function to create the encoders (publishers and subscribers)
-        setupEncoder(cam_name);
-    }
-
 }   //  Constructor
 
 /**
@@ -92,6 +71,34 @@ EncoderManager::~EncoderManager()
     RCLCPP_INFO(this->get_logger(), "Encoder Manager Node Shutting Down.");
 }   //  Destructor
 
+/**
+ * init Method
+ */
+void EncoderManager::init()
+{
+
+    //  Create services and setup the encoder for each camera
+    for (const auto &camera : encoder_configs_)
+    {
+        const std::string &cam_name = camera.first;
+        std::string service_name = "/" + cam_name + "/bool";
+
+        encoder_status_[cam_name] = false;
+
+        //  Use std::bind to pass the camera_namespace
+        control_services_[cam_name] = this->create_service<std_srvs::srv::SetBool>(
+            service_name, 
+            std::bind(&EncoderManager::encoderControlCallback, this,
+                      std::placeholders::_1, std::placeholders::_2, cam_name)
+        );
+
+        RCLCPP_INFO(this->get_logger(), "Created service: %s for %s", service_name.c_str(), cam_name.c_str());
+    
+        //  Call the setup function to create the encoders (publishers and subscribers)
+        setupEncoder(cam_name);
+    }
+}
+
 /*
  * Private Functions 
  */
@@ -100,7 +107,7 @@ EncoderManager::~EncoderManager()
  * setupEncoder - Will start all cameras on node startup, given each camera_namespace, 
  * this is to get rid of the start and kill of encoders
  */
-void setupEncoder(const std::string &camera_namespace)
+void EncoderManager::setupEncoder(const std::string &camera_namespace)
 {
     //  Try to setup encoder
     try
