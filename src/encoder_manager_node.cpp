@@ -85,12 +85,17 @@ void EncoderManager::init()
 
         encoder_status_[cam_name] = false;
 
-        //  Use std::bind to pass the camera_namespace
+        //  Use lambda to pass the camera_namespace
         control_services_[cam_name] = this->create_service<std_srvs::srv::SetBool>(
             service_name, 
-            std::bind(&EncoderManager::encoderControlCallback, this,
-                      std::placeholders::_1, std::placeholders::_2, cam_name)
+            [this, cam_name](
+                const std::shared_ptr<std_srvs::srv::SetBool::Request> request,
+                const std::shared_ptr<std_srvs::srv::SetBool::Response> response)
+            {
+                this->encoderControlCallback(request, response, cam_name);
+            }
         );
+
 
         RCLCPP_INFO(this->get_logger(), "Created service: %s for %s", service_name.c_str(), cam_name.c_str());
     
@@ -279,4 +284,4 @@ bool EncoderManager::stopEncoder(const std::string &camera_namespace)
     RCLCPP_INFO(this->get_logger(), "Publishing stopped for node %s", camera_namespace.c_str());
 }   //  stopEncoder
 
-}   //  namespace umrt_serial_cam_ros
+}   //  namespace umrt_serial_cam_ros./
