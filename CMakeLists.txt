@@ -48,7 +48,7 @@ file(READ "version" version_input)
 string(REGEX MATCH "([0-9]+)\.([0-9]+)\.([0-9]+)" _ ${version_input})
 
 # Fill version number into package.xml
-# configure_file(
+configure_file(
         package.in.xml
         ${CMAKE_CURRENT_SOURCE_DIR}/package.xml
         @ONLY
