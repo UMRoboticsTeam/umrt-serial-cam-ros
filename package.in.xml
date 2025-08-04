@@ -14,13 +14,13 @@
 
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
+  <exec_depend>ffmpeg</exec_depend>
 
-  <depend>ffmpeg</depend>
-  <depend>ros-humble-v4l2-camera</depend>
-  <depend>ros-humble-image-transport-plugins</depend>
-  <depend>ros-humble-rmw2-fastrtps-cpp</depend>
-  <depend>ros-humble-image-transport</depend>
-  <depend>ros-humble-ffmpeg-image-transport</depend>
+  <depend>v4l2_camera</depend>
+  <depend>image_transport_plugins</depend>
+  <depend>rmw_fastrtps_cpp</depend>
+  <depend>image_transport</depend>
+  <depend>ffmpeg_image_transport</depend>
   <depend>std_srvs</depend>
 
   <export>

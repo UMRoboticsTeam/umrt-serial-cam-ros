@@ -55,8 +55,8 @@ private:
         const sensor_msgs::msg::Image::ConstSharedPtr &msg,
         const std::string &camera_namespace);
 
-    bool startEncoder(const std::string &camera_namespace);
-    bool stopEncoder(const std::string &camera_namespace);
+    void startEncoder(const std::string &camera_namespace);
+    void stopEncoder(const std::string &camera_namespace);
 
     // Unordered Map to store configuration for each camera
     std::unordered_map<std::string, EncoderConfig> encoder_configs_;

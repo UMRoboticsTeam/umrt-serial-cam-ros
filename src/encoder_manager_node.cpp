@@ -269,7 +269,7 @@ void EncoderManager::rawImageCallback(
 /**
  * startEncoder Function - This will start an encoder which is essentially a republish
  */
-bool EncoderManager::startEncoder(const std::string &camera_namespace)
+void EncoderManager::startEncoder(const std::string &camera_namespace)
 {
     encoder_status_[camera_namespace] = true;
     RCLCPP_INFO(this->get_logger(), "Publishing started for node %s", camera_namespace.c_str());
@@ -278,7 +278,7 @@ bool EncoderManager::startEncoder(const std::string &camera_namespace)
 /**
  * stopEncoder Function - Stop the Encoder given the camera namespace
  */
-bool EncoderManager::stopEncoder(const std::string &camera_namespace)
+void EncoderManager::stopEncoder(const std::string &camera_namespace)
 {   
     encoder_status_[camera_namespace] = false;
     RCLCPP_INFO(this->get_logger(), "Publishing stopped for node %s", camera_namespace.c_str());
