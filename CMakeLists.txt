@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(********** Fill in project name **********)
+project(umrt-serial-cam-ros)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -14,6 +14,11 @@ include_directories(SYSTEM /opt/ros/$ENV{ROS_DISTRO}/include)
 set(THIS_PACKAGE_INCLUDE_DEPENDS
         rclcpp
         rclcpp_lifecycle
+        image_transport
+        ffmpeg_image_transport
+        image_transport_plugins
+        sensor_msgs
+        std_srvs
         )
 
 # find dependencies
@@ -22,15 +27,17 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
+# CHANGE THIS TO ADD ENCODER MANAGER
 add_executable(${PROJECT_NAME}
-    src/project_name.cpp
-    src/example_node.cpp
+    src/encoder_manager.cpp
+    src/encoder_manager_node.cpp
 )
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 target_include_directories(${PROJECT_NAME} PUBLIC
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
         )
+
 ament_target_dependencies(
         ${PROJECT_NAME} PUBLIC
         ${THIS_PACKAGE_INCLUDE_DEPENDS}
@@ -54,8 +61,10 @@ install(TARGETS
         )
 
 install(
-        DIRECTORY launch
-        DESTINATION share/${PROJECT_NAME}/
+        DIRECTORY 
+        launch
+        config
+        DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()
