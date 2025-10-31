@@ -3,7 +3,7 @@
 <package format="3">
   <name>umrt-serial-cam-ros</name>
   <version>@version_input@</version> <!-- Version number parsed from version file, replaced here by CMake -->
-  <description>*UMRT Serial Camera ROS Package</description>
+  <description>UMRT Serial Camera ROS Package</description>
   <maintainer email="158010272+edcela@users.noreply.github.com">edcel</maintainer>
   <license>MPL-2.0</license>
 
@@ -12,15 +12,16 @@
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
 
-  <exec_depend>launch</exec_depend>
-  <exec_depend>launch_ros</exec_depend>
-  <exec_depend>ffmpeg</exec_depend>
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
+  <!-- Package dependencies -->
   <depend>v4l2_camera</depend>
   <depend>image_transport_plugins</depend>
   <depend>rmw_fastrtps_cpp</depend>
   <depend>image_transport</depend>
   <depend>ffmpeg_image_transport</depend>
+  <depend>sensor_msgs</depend>
   <depend>std_srvs</depend>
 
   <export>

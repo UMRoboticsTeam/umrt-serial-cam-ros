@@ -18,7 +18,6 @@ def generate_launch_description():
     """
     Parameters
     """
-    
     # We can declare some arguments that can be passed on but it's not used here
     rover0_arg = DeclareLaunchArgument('rover0', default_value=os.getenv('CAM1'), description='Device path for rover camera 0')
     arm1_arg = DeclareLaunchArgument('arm0', default_value=os.getenv('ARMCAM0'), description='Device path for arm camera 0')
